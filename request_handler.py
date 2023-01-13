@@ -148,17 +148,18 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_DELETE(self):
         # Set a 204 response code
-        self._set_headers(204)
+        # self._set_headers(204)
 
         # Parse the URL
         (resource, id) = self.parse_url(self.path)
 
         # Delete a single order from the list
         if resource == "orders":
-            delete_order(id)
+            self._set_headers(405)
+            response = {
+                "message": f"Customer #{id} cannot be deleted"}
 
-        # Encode the new order and send in response
-        self.wfile.write("".encode())
+        self.wfile.write(json.dumps(response).encode())
 
 # point of this application.
 
