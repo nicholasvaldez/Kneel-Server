@@ -41,28 +41,44 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "metals":
             if id is not None:
                 response = get_single_metal(id)
+                if response is None:
+                    self._set_headers(404)
+                    response = {
+                        "message": "That metal is not currently in stock for jewelry."
+                    }
             else:
                 response = get_all_metals()
         elif resource == "styles":
             if id is not None:
                 response = get_single_style(id)
+                self._set_headers(404)
+                response = {
+                    "message": "That style is not currently in stock for jewelry."
+                }
             else:
                 response = get_all_styles()
         elif resource == "sizes":
             if id is not None:
                 response = get_single_size(id)
+                self._set_headers(404)
+                response = {
+                    "message": "That size is not currently in stock for jewelry."
+                }
             else:
                 response = get_all_sizes()
         elif resource == "orders":
             if id is not None:
                 response = get_single_order(id)
+                self._set_headers(404)
+                response = {
+                    "message": "This order was cancelled or does not exist"
+                }
             else:
                 response = get_all_orders()
 
         self.wfile.write(json.dumps(response).encode())
 
     def do_POST(self):
-        self._set_headers(201)
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
 
@@ -79,10 +95,17 @@ class HandleRequests(BaseHTTPRequestHandler):
         # the orange squiggle, you'll define the create_order
         # function next.
         if resource == "orders":
-            new_order = create_order(post_body)
+            if "sizeId" in post_body and "styleId" in post_body and "metalId" in post_body:
+                self._set_headers(201)
+                new_order = create_order(post_body)
+            else:
+                self._set_headers(400)
+                new_order = {
+                    "message": f'{"style is required"}' if "styleId" not in post_body else "" f'{"size is required"}' if "sizeId" not in post_body else "" f'{"metal is required"}' if "metalId" not in post_body else ""
+                }
 
-        # Encode the new order and send in response
-        self.wfile.write(json.dumps(new_order).encode())
+                # Encode the new order and send in response
+                self.wfile.write(json.dumps(new_order).encode())
 
     def do_PUT(self):
         self._set_headers(204)
