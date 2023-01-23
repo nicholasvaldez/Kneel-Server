@@ -1,5 +1,5 @@
 import json
-from views import get_all_metals, get_all_orders, get_all_sizes, get_all_styles, get_single_metal, get_single_order, get_single_size, get_single_style, create_order, delete_order, update_order
+from views import get_all_metals, get_all_orders, get_all_sizes, get_all_styles, get_single_metal, get_single_order, get_single_size, get_single_style, create_order, delete_order, update_order, update_metal
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -109,7 +109,6 @@ class HandleRequests(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(new_order).encode())
 
     def do_PUT(self):
-        self._set_headers(204)
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
         post_body = json.loads(post_body)
@@ -117,11 +116,17 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Parse the URL
         (resource, id) = self.parse_url(self.path)
 
-        # Delete a single order from the list
-        if resource == "orders":
-            update_order(id, post_body)
+        success = False
 
-        # Encode the new order and send in response
+        if resource == "metals":
+            success = update_metal(id, post_body)
+        # rest of the elif's
+
+        if success:
+            self._set_headers(204)
+        else:
+            self._set_headers(404)
+
         self.wfile.write("".encode())
 
     def _set_headers(self, status):
