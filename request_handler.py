@@ -147,20 +147,35 @@ class HandleRequests(BaseHTTPRequestHandler):
                          'X-Requested-With, Content-Type, Accept')
         self.end_headers()
 
+    # def do_DELETE(self):
+    #     # Set a 204 response code
+    #     # self._set_headers(204)
+
+    #     # Parse the URL
+    #     (resource, id) = self.parse_url(self.path)
+
+    #     # Delete a single order from the list
+    #     if resource == "orders":
+    #         self._set_headers(405)
+    #         response = {
+    #             "message": f"Customer #{id} cannot be deleted"}
+
+    #     self.wfile.write(json.dumps(response).encode())
+
     def do_DELETE(self):
         # Set a 204 response code
-        # self._set_headers(204)
+        self._set_headers(204)
 
         # Parse the URL
         (resource, id) = self.parse_url(self.path)
 
         # Delete a single order from the list
         if resource == "orders":
-            self._set_headers(405)
-            response = {
-                "message": f"Customer #{id} cannot be deleted"}
+            delete_order(id)
 
-        self.wfile.write(json.dumps(response).encode())
+        # Encode the new order and send in response
+        self.wfile.write("".encode())
+
 
 # point of this application.
 
