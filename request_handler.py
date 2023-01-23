@@ -69,10 +69,11 @@ class HandleRequests(BaseHTTPRequestHandler):
         elif resource == "orders":
             if id is not None:
                 response = get_single_order(id)
-                self._set_headers(404)
-                response = {
-                    "message": "This order was cancelled or does not exist"
-                }
+
+                # self._set_headers(404)
+                # response = {
+                #     "message": "This order was cancelled or does not exist"
+                # }
             else:
                 response = get_all_orders()
 
