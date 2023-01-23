@@ -3,7 +3,7 @@ from .styles_requests import get_single_style
 from .metals_requests import get_single_metal
 import sqlite3
 import json
-from models import Orders
+from models import Orders, Metal, Style, Size
 
 
 ORDERS = [
@@ -31,8 +31,17 @@ def get_all_orders():
             o.metal_id,
             o.size_id,
             o.style_id,
-            o.timestamp
+            o.timestamp,
+            m.metal,
+            m.price,
+            s.carets,
+            s.price,
+            z.style,
+            z.price
         FROM orders o
+        JOIN Metals m ON m.id = o.metal_id
+        JOIN Styles z ON z.id = o.style_id
+        JOIN Sizes s ON s.id = o.size_id
         """)
 
         # Initialize an empty list to hold all order representations
@@ -50,6 +59,16 @@ def get_all_orders():
             # order class above.
             order = Orders(row['id'], row['metal_id'],
                            row['size_id'], row['style_id'], row['timestamp'])
+
+            metal = Metal(row['id'], row['metal'], row['price'])
+
+            size = Size(row['id'], row['carets'], row['price'])
+
+            style = Style(row['id'], row['Style'], row['price'])
+
+            order.metal = metal.__dict__
+            order.size = size.__dict__
+            order.style = style.__dict__
 
             orders.append(order.__dict__)
 

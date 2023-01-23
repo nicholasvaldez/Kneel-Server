@@ -8,3 +8,6 @@ class Orders():
         self.sizeId = sizeId
         self.styleId = styleId
         self.timestamp = timestamp
+        self.style = None
+        self.size = None
+        self.metal = None
